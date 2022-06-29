@@ -31,7 +31,19 @@ class forgotPwPage extends StatelessWidget {
         //   timeInSecForIosWeb: 3,
         //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
         // );
-        print('請輸入學號');
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('請輸入完整資料'),
+                  content: Icon(Icons.warning_amber_rounded, color: Colors.yellow,size: 100,),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
       } else {
         if (emailAddress.isEmpty == true) {
           // Fluttertoast.showToast(
@@ -41,13 +53,41 @@ class forgotPwPage extends StatelessWidget {
           //   timeInSecForIosWeb: 3,
           //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
           // );
-          print('請輸入信箱');
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('請輸入完整資料'),
+                  content: Icon(Icons.warning_amber_rounded, color: Colors.yellow,size: 100,),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
         } else {
-          print('已傳送郵件至信箱');
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => loginPage()),
-          );
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('已寄出重置密碼信件至您的信箱'),
+                  content: Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.green,
+                    size: 100,
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => loginPage()),
+                          );
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
         }
       }
     }

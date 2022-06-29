@@ -155,7 +155,7 @@ class _signUpPageState extends State<signUpPage> {
               },
             ),
             title: Text(
-              '忘記密碼',
+              '創建帳號',
               style: TextStyle(fontSize: 20),
             ),
             centerTitle: true,

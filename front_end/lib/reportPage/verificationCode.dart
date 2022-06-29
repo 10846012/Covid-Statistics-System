@@ -50,11 +50,27 @@ class verification_Code extends StatelessWidget {
                         color: Color.fromARGB(255, 54, 160, 247)),
                     child: TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => reportPage()),
-                          );
+                          showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('驗證碼已傳送至信箱'),
+                      content: Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green,
+                        size: 100,
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => reportPage()),
+                              );
+                            },
+                            child: Text('確認')),
+                      ],
+                    ));
                         },
                         child: Text(
                           '傳送驗證碼至信箱',

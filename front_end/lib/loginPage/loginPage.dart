@@ -93,7 +93,7 @@ class loginPage extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: 120),
+                  padding: EdgeInsets.only(top: 70),
                   child: Container(
                     height: 120,
                     width: MediaQuery.of(context).size.width,
@@ -101,18 +101,31 @@ class loginPage extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.only(top: 30,bottom: 20),
                   child: Container(
                     height: 40,
                     width: MediaQuery.of(context).size.width,
                     child: Center(
                       child: Text(
-                        '登入',
-                        style: TextStyle(fontSize: 30),
+                        '校內確診通報系統',
+                        style: TextStyle(fontSize: 40),
                       ),
                     ),
                   ),
                 ),
+                // Padding(
+                //   padding: EdgeInsets.only(top: 20),
+                //   child: Container(
+                //     height: 40,
+                //     width: MediaQuery.of(context).size.width,
+                //     child: Center(
+                //       child: Text(
+                //         '登入',
+                //         style: TextStyle(fontSize: 30),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: EdgeInsets.only(left: 35, right: 35, bottom: 20),
                   child: Center(
