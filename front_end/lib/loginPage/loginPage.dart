@@ -38,7 +38,19 @@ class loginPage extends StatelessWidget {
         //   timeInSecForIosWeb: 3,
         //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
         // );
-        print('請輸入學號');
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('請輸入完整資料'),
+                  content: Icon(Icons.warning_amber_rounded, color: Colors.yellow,size: 100,),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
       } else {
         if (password.isEmpty == true) {
           // Fluttertoast.showToast(
@@ -48,7 +60,19 @@ class loginPage extends StatelessWidget {
           //   timeInSecForIosWeb: 3,
           //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
           // );
-          print('請輸入密碼');
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('請輸入完整資料'),
+                  content: Icon(Icons.warning_amber_rounded, color: Colors.yellow,size: 100,),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
         } else {
           print('登入成功');
           Navigator.push(
@@ -187,10 +211,7 @@ class loginPage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => 
-                                  
-                                  signUpPage()
-                                  ),
+                                  builder: (context) => signUpPage()),
                             );
                           },
                           child: Text('建立帳號')),

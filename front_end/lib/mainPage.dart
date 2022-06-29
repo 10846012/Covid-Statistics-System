@@ -19,10 +19,32 @@ class mainPage extends StatelessWidget {
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => loginPage()),
-                );
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          title: Text('確定要登出嗎'),
+                          content: Icon(
+                            Icons.question_mark,
+                            color: Colors.grey,
+                            size: 100,
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => loginPage()),
+                                  );
+                                },
+                                child: Text('確認')),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('取消')),
+                          ],
+                        ));
               },
             ),
             title: Text(

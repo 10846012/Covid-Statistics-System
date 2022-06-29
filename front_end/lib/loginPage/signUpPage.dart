@@ -15,7 +15,7 @@ class _signUpPageState extends State<signUpPage> {
     super.initState();
     getController.sStudentID = '';
     getController.sPassword = '';
-    getController.sEmailAdress= '';
+    getController.sEmailAdress = '';
   }
 
   final studentID_Controller = TextEditingController();
@@ -47,7 +47,23 @@ class _signUpPageState extends State<signUpPage> {
         //   timeInSecForIosWeb: 3,
         //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
         // );
-        print('請輸入學號');
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('請輸入完整資料'),
+                  content: Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.yellow,
+                    size: 100,
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
       } else {
         if (password.isEmpty == true) {
           // Fluttertoast.showToast(
@@ -57,19 +73,67 @@ class _signUpPageState extends State<signUpPage> {
           //   timeInSecForIosWeb: 3,
           //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
           // );
-          print('請輸入密碼');
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('請輸入完整資料'),
+                    content: Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.yellow,
+                      size: 100,
+                    ),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('確認')),
+                    ],
+                  ));
         } else {
           if (emailAddress.isEmpty == true) {
-            print('請輸入信箱');
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('請輸入完整資料'),
+                      content: Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.yellow,
+                        size: 100,
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('確認')),
+                      ],
+                    ));
           } else {
-            print('已傳送驗證碼至信箱');
             getController.sStudentID = studentID;
             getController.sPassword = password;
             getController.sEmailAdress = emailAddress;
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => signUpFinalPage()),
-            );
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('驗證碼已傳送至信箱'),
+                      content: Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green,
+                        size: 100,
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => signUpFinalPage()),
+                              );
+                            },
+                            child: Text('確認')),
+                      ],
+                    ));
           }
         }
       }

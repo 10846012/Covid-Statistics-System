@@ -49,7 +49,23 @@ class _reportPageState extends State<reportPage> {
       //   timeInSecForIosWeb: 3,
       //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
       // );
-      print('請輸入驗證碼');
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('請輸入完整資料'),
+                content: Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.yellow,
+                  size: 100,
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('確認')),
+                ],
+              ));
     } else {
       if (getControllers.reportPageTempPhoto == null) {
         // Fluttertoast.showToast(
@@ -59,16 +75,48 @@ class _reportPageState extends State<reportPage> {
         //   timeInSecForIosWeb: 3,
         //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
         // );
-        print('未選取照片');
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('請輸入完整資料'),
+                  content: Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.yellow,
+                    size: 100,
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
       } else {
         getControllers.caseAdd();
 
         getControllers.reportPageTempPhoto = null;
-        getControllers.reportDataTest();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => mainPage()),
-        );
+        getControllers.reportDataToJson();
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('回報成功'),
+                  content: Icon(
+                    Icons.check_circle_outline,
+                    color: Colors.green,
+                    size: 100,
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => mainPage()),
+                          );
+                        },
+                        child: Text('確認')),
+                  ],
+                ));
       }
     }
   }
@@ -149,7 +197,23 @@ class _reportPageState extends State<reportPage> {
                               color: Color.fromARGB(255, 54, 160, 247)),
                           child: TextButton(
                             onPressed: () {
-                              print('已重新傳送驗證碼至信箱');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text('驗證碼已傳送至信箱'),
+                                        content: Icon(
+                                          Icons.check_circle_outline,
+                                          color: Colors.green,
+                                          size: 100,
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('確認')),
+                                        ],
+                                      ));
                             },
                             child: Text(
                               '重送驗證碼',

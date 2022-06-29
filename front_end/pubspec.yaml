@@ -37,6 +37,7 @@ dependencies:
   image_picker: ^0.8.5+3
   get: ^4.6.5
   #fluttertoast: ^8.0.9
+  flutter_native_splash: ^2.2.3+1
   
 
 dev_dependencies:
@@ -49,6 +50,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+flutter_native_splash:
+  background_image: assets/images/campus2.png
+  image: assets/images/LOGO.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,6 +69,12 @@ flutter:
   assets:
     - assets/images/
   
+  fonts:
+    - family: GenSenRounded
+      fonts:
+        - asset: assets/font/GenSenRounded-R.ttc
+  
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
