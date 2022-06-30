@@ -1,24 +1,28 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:front_end/get.dart';
-import 'package:front_end/mainPage.dart';
+import 'package:front_end/package/get.dart';
+import 'package:front_end/mainPage/mainPage.dart';
 import 'package:front_end/reportPage/reportPage.dart';
+import 'package:get/get.dart';
 
 class verification_Code extends StatelessWidget {
-  const verification_Code({Key? key}) : super(key: key);
+  verification_Code({Key? key}) : super(key: key);
+
+  getController getControllers = Get.put(getController()); //get套件
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => mainPage()),
-                );
-              },
-            ),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => mainPage()),
+              );
+            },
+          ),
           title: Text(
             '回報頁面',
             style: TextStyle(fontSize: 20),
@@ -41,7 +45,7 @@ class verification_Code extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 35, right: 35,bottom: 120),
+                padding: EdgeInsets.only(left: 35, right: 35, bottom: 120),
                 child: Container(
                     height: 70,
                     width: MediaQuery.of(context).size.width,
@@ -50,27 +54,37 @@ class verification_Code extends StatelessWidget {
                         color: Color.fromARGB(255, 54, 160, 247)),
                     child: TextButton(
                         onPressed: () {
-                          showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                      title: Text('驗證碼已傳送至信箱'),
-                      content: Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.green,
-                        size: 100,
-                      ),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => reportPage()),
-                              );
-                            },
-                            child: Text('確認')),
-                      ],
-                    ));
+                          showCupertinoModalPopup<void>(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) =>
+                                CupertinoAlertDialog(
+                              title: Text('驗證碼已傳送至信箱'),
+                              content: Padding(
+                                padding: EdgeInsets.all(15.0),
+                                child: Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: 80,
+                                ),
+                              ),
+                              actions: <CupertinoDialogAction>[
+                                CupertinoDialogAction(
+                                  isDefaultAction: true,
+                                  onPressed: () {
+                                    getControllers
+                                        .reportVerificationCodeGenerator();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => reportPage()),
+                                    );
+                                  },
+                                  child: const Text('確認'),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                         child: Text(
                           '傳送驗證碼至信箱',

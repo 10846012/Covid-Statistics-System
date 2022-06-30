@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:front_end/loginPage/loginPage.dart';
 import 'package:front_end/loginPage/signUpPage.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../get.dart';
+import '../package/get.dart';
 
 class signUpFinalPage extends StatefulWidget {
   const signUpFinalPage({Key? key}) : super(key: key);
@@ -16,13 +18,15 @@ class signUpFinalPage extends StatefulWidget {
 }
 
 class _signUpFinalPageState extends State<signUpFinalPage> {
-  getController getControllers = Get.put(getController());
+  getController getControllers = Get.put(getController()); //get套件
+  final ImagePicker _picker = ImagePicker(); //image picker套件
 
-  final verificationCode_Controller = TextEditingController();
+  final verificationCode_Controller =
+      TextEditingController(); //驗證碼textfield Controller
 
-  File? image;
+  File? image; //image picker的暫存值
 
-  final ImagePicker _picker = ImagePicker();
+  //image picker拍照片
   Future pickImage(ImageSource source) async {
     try {
       final image = await _picker.pickImage(source: source);
@@ -38,84 +42,93 @@ class _signUpFinalPageState extends State<signUpFinalPage> {
     }
   }
 
+  //確認
   void dataEmptyCheck() {
     String verificationCode = verificationCode_Controller.text;
 
-    if (verificationCode.isEmpty == true) {
-      // Fluttertoast.showToast(
-      //   msg: '請輸入驗證碼',
-      //   gravity: ToastGravity.CENTER,
-      //   toastLength: Toast.LENGTH_SHORT,
-      //   timeInSecForIosWeb: 3,
-      //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
-      // );
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('請輸入完整資料'),
-                content: Icon(
-                  Icons.warning_amber_rounded,
-                  color: Colors.yellow,
-                  size: 100,
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('確認')),
-                ],
-              ));
+    if (verificationCode.isEmpty == true ||
+        getControllers.signUpPageTempPhoto == null) {
+      showCupertinoModalPopup<void>(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text('驗證碼或照片不可為空'),
+          content: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Icon(
+              Icons.do_not_disturb_alt_outlined,
+              color: Colors.red,
+              size: 80,
+            ),
+          ),
+          actions: <CupertinoDialogAction>[
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('確認'),
+            ),
+          ],
+        ),
+      );
     } else {
-      if (getControllers.signUpPageTempPhoto == null) {
-        // Fluttertoast.showToast(
-        //   msg: '未選取照片',
-        //   gravity: ToastGravity.CENTER,
-        //   toastLength: Toast.LENGTH_SHORT,
-        //   timeInSecForIosWeb: 3,
-        //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
-        // );
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('請輸入完整資料'),
-                  content: Icon(
-                    Icons.warning_amber_rounded,
-                    color: Colors.yellow,
-                    size: 100,
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text('確認')),
-                  ],
-                ));
+      if (getController.signUpTempVerificationCode != verificationCode) {
+        print(verificationCode);
+        showCupertinoModalPopup<void>(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) => CupertinoAlertDialog(
+            title: Text('驗證碼錯誤'),
+            content: Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Icon(
+                Icons.do_not_disturb_alt_outlined,
+                color: Colors.red,
+                size: 80,
+              ),
+            ),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('確認'),
+              ),
+            ],
+          ),
+        );
       } else {
-        getControllers.signUpPageTempPhoto == null;
-        getControllers.signDataToJson();
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('註冊成功'),
-                  content: Icon(
-                    Icons.check_circle_outline,
-                    color: Colors.green,
-                    size: 100,
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => loginPage()),
-                          );
-                        },
-                        child: Text('確認')),
-                  ],
-                ));
+        getControllers.signUpDone();
+        showCupertinoModalPopup<void>(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) => CupertinoAlertDialog(
+            title: Text('創建成功'),
+            content: Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Icon(
+                Icons.check_circle_outline,
+                color: Colors.green,
+                size: 80,
+              ),
+            ),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () {
+                  getController.signUpTempVerificationCode = '';
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => loginPage()),
+                  );
+                },
+                child: const Text('確認'),
+              ),
+            ],
+          ),
+        );
       }
     }
   }
@@ -181,6 +194,10 @@ class _signUpFinalPageState extends State<signUpFinalPage> {
                             decoration: InputDecoration(
                                 labelText: '驗證碼', hintText: '請輸入信箱驗證碼'),
                             keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(4),
+                            ],
                             controller: verificationCode_Controller,
                           ),
                         ),
@@ -196,23 +213,33 @@ class _signUpFinalPageState extends State<signUpFinalPage> {
                               color: Color.fromARGB(255, 54, 160, 247)),
                           child: TextButton(
                             onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        title: Text('驗證碼已傳送至信箱'),
-                                        content: Icon(
-                                          Icons.check_circle_outline,
-                                          color: Colors.green,
-                                          size: 100,
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('確認')),
-                                        ],
-                                      ));
+                              showCupertinoModalPopup<void>(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    CupertinoAlertDialog(
+                                  title: Text('已重新傳送驗證碼至您的信箱'),
+                                  content: Padding(
+                                    padding: EdgeInsets.all(15.0),
+                                    child: Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.green,
+                                      size: 80,
+                                    ),
+                                  ),
+                                  actions: <CupertinoDialogAction>[
+                                    CupertinoDialogAction(
+                                      isDefaultAction: true,
+                                      onPressed: () {
+                                        getControllers
+                                            .signUpVerificationCodeGenerator();
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('確認'),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                             child: Text(
                               '重送驗證碼',
@@ -235,26 +262,6 @@ class _signUpFinalPageState extends State<signUpFinalPage> {
                         child: TextButton(
                           onPressed: () {
                             pickImage(ImageSource.camera);
-
-                            // showDialog(
-                            //     context: context,
-                            //     builder: (context) => AlertDialog(
-                            //           title: Text('選擇照片方式'),
-                            //           actions: [
-                            //             TextButton(
-                            //                 onPressed: () {
-                            //                   pickImage(ImageSource.camera);
-                            //                   Navigator.pop(context);
-                            //                 },
-                            //                 child: Text('從相機拍攝')),
-                            //             TextButton(
-                            //                 onPressed: () {
-                            //                   pickImage(ImageSource.gallery);
-                            //                   Navigator.pop(context);
-                            //                 },
-                            //                 child: Text('從相簿選取'))
-                            //           ],
-                            //         ));
                           },
                           child: Text(
                             '上傳學生證正面照',

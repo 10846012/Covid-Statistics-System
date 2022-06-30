@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:front_end/get.dart';
-import 'package:front_end/mainPage.dart';
+import 'package:front_end/package/get.dart';
+import 'package:front_end/mainPage/mainPage.dart';
 import 'package:front_end/reportPage/verificationCode.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,13 +18,15 @@ class reportPage extends StatefulWidget {
 }
 
 class _reportPageState extends State<reportPage> {
-  getController getControllers = Get.put(getController());
+  getController getControllers = Get.put(getController()); //get套件
+  final ImagePicker _picker = ImagePicker(); //image picker套件
 
-  final verificationCode_Controller = TextEditingController();
+  final verificationCode_Controller =
+      TextEditingController(); //輸入驗證碼的textfield的controller
 
-  File? image;
+  File? image; //存放拍完照後的照片
 
-  final ImagePicker _picker = ImagePicker();
+  //拍照功能
   Future pickImage(ImageSource source) async {
     try {
       final image = await _picker.pickImage(source: source);
@@ -38,85 +42,105 @@ class _reportPageState extends State<reportPage> {
     }
   }
 
+  //驗證碼產生器
+  void verificationCodeGenerator() {
+    var rng = Random();
+    String v = '';
+    for (var i = 0; i < 4; i++) {
+      v = v + rng.nextInt(9).toString();
+    }
+    print(v);
+    getController.reportTempVerificationCode = v;
+  }
+
+  //輸入值偵測
   void dataEmptyCheck() {
     String verificationCode = verificationCode_Controller.text;
-
-    if (verificationCode.isEmpty == true) {
-      // Fluttertoast.showToast(
-      //   msg: '請輸入驗證碼',
-      //   gravity: ToastGravity.CENTER,
-      //   toastLength: Toast.LENGTH_SHORT,
-      //   timeInSecForIosWeb: 3,
-      //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
-      // );
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('請輸入完整資料'),
-                content: Icon(
-                  Icons.warning_amber_rounded,
-                  color: Colors.yellow,
-                  size: 100,
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('確認')),
-                ],
-              ));
+    //偵測是否為空值
+    if (verificationCode.isEmpty == true ||
+        getControllers.reportPageTempPhoto == null) {
+      showCupertinoModalPopup<void>(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text('驗證碼或照片不可為空'),
+          content: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Icon(
+              Icons.do_not_disturb_alt_outlined,
+              color: Colors.red,
+              size: 80,
+            ),
+          ),
+          actions: <CupertinoDialogAction>[
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('確認'),
+            ),
+          ],
+        ),
+      );
     } else {
-      if (getControllers.reportPageTempPhoto == null) {
-        // Fluttertoast.showToast(
-        //   msg: '未選取照片',
-        //   gravity: ToastGravity.CENTER,
-        //   toastLength: Toast.LENGTH_SHORT,
-        //   timeInSecForIosWeb: 3,
-        //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
-        // );
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('請輸入完整資料'),
-                  content: Icon(
-                    Icons.warning_amber_rounded,
-                    color: Colors.yellow,
-                    size: 100,
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text('確認')),
-                  ],
-                ));
+      //偵測驗證碼
+      if (getController.reportTempVerificationCode != verificationCode) {
+        print(verificationCode);
+        showCupertinoModalPopup<void>(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) => CupertinoAlertDialog(
+            title: Text('驗證碼錯誤'),
+            content: Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Icon(
+                Icons.do_not_disturb_alt_outlined,
+                color: Colors.red,
+                size: 80,
+              ),
+            ),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('確認'),
+              ),
+            ],
+          ),
+        );
       } else {
-        getControllers.caseAdd();
-
-        getControllers.reportPageTempPhoto = null;
-        getControllers.reportDataToJson();
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('回報成功'),
-                  content: Icon(
-                    Icons.check_circle_outline,
-                    color: Colors.green,
-                    size: 100,
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => mainPage()),
-                          );
-                        },
-                        child: Text('確認')),
-                  ],
-                ));
+        getControllers.reportDone();
+        showCupertinoModalPopup<void>(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) => CupertinoAlertDialog(
+            title: Text('回報完成'),
+            content: Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Icon(
+                Icons.check_circle_outline,
+                color: Colors.green,
+                size: 80,
+              ),
+            ),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () {
+                  getController.reportTempVerificationCode = '';
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => mainPage()),
+                  );
+                },
+                child: const Text('確認'),
+              ),
+            ],
+          ),
+        );
       }
     }
   }
@@ -137,7 +161,7 @@ class _reportPageState extends State<reportPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus();
+          FocusScope.of(context).unfocus(); //取消輸入
         },
         child: Scaffold(
           appBar: AppBar(
@@ -159,6 +183,7 @@ class _reportPageState extends State<reportPage> {
           ),
           body: SingleChildScrollView(
             child: Container(
+              //背景
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
@@ -174,6 +199,7 @@ class _reportPageState extends State<reportPage> {
                   Row(
                     children: [
                       Padding(
+                        //輸入驗證碼
                         padding: EdgeInsets.only(left: 35, top: 50),
                         child: Container(
                           height: 70,
@@ -182,11 +208,16 @@ class _reportPageState extends State<reportPage> {
                             decoration: InputDecoration(
                                 labelText: '驗證碼', hintText: '請輸入信箱驗證碼'),
                             keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(4),
+                            ],
                             controller: verificationCode_Controller,
                           ),
                         ),
                       ),
                       Expanded(
+                          //重送驗證碼
                           child: Padding(
                         padding: EdgeInsets.only(left: 35, right: 35, top: 50),
                         child: Container(
@@ -197,23 +228,33 @@ class _reportPageState extends State<reportPage> {
                               color: Color.fromARGB(255, 54, 160, 247)),
                           child: TextButton(
                             onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        title: Text('驗證碼已傳送至信箱'),
-                                        content: Icon(
-                                          Icons.check_circle_outline,
-                                          color: Colors.green,
-                                          size: 100,
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('確認')),
-                                        ],
-                                      ));
+                              showCupertinoModalPopup<void>(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    CupertinoAlertDialog(
+                                  title: Text('已重新傳送驗證碼至您的信箱'),
+                                  content: Padding(
+                                    padding: EdgeInsets.all(15.0),
+                                    child: Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.green,
+                                      size: 80,
+                                    ),
+                                  ),
+                                  actions: <CupertinoDialogAction>[
+                                    CupertinoDialogAction(
+                                      isDefaultAction: true,
+                                      onPressed: () {
+                                        getControllers
+                                            .reportVerificationCodeGenerator();
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('確認'),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                             child: Text(
                               '重送驗證碼',
@@ -225,6 +266,7 @@ class _reportPageState extends State<reportPage> {
                     ],
                   ),
                   Align(
+                    //拍照
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: EdgeInsets.only(left: 35, right: 35, top: 30),
@@ -237,7 +279,7 @@ class _reportPageState extends State<reportPage> {
                           onPressed: () {
                             pickImage(ImageSource.camera);
 
-                            // showDialog(
+                            // showDialog( //利用alertdialog選擇相簿照片或選擇拍照
                             //     context: context,
                             //     builder: (context) => AlertDialog(
                             //           title: Text('選擇照片方式'),
@@ -266,6 +308,7 @@ class _reportPageState extends State<reportPage> {
                     ),
                   ),
                   Padding(
+                    //照片顯示
                     padding: const EdgeInsets.fromLTRB(35, 15, 35, 0),
                     child: Container(
                       height: 250,
@@ -285,6 +328,7 @@ class _reportPageState extends State<reportPage> {
                     ),
                   ),
                   Padding(
+                    //完成
                     padding: EdgeInsets.only(top: 36, left: 35, right: 35),
                     child: Center(
                       child: Container(

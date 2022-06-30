@@ -1,7 +1,13 @@
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:front_end/get.dart';
+import 'package:flutter/services.dart';
+import 'package:front_end/package/get.dart';
 import 'package:front_end/loginPage/loginPage.dart';
 import 'package:front_end/loginPage/signUpFinalPage.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:get/get.dart';
 
 class signUpPage extends StatefulWidget {
   const signUpPage({Key? key}) : super(key: key);
@@ -9,6 +15,8 @@ class signUpPage extends StatefulWidget {
   @override
   State<signUpPage> createState() => _signUpPageState();
 }
+
+getController getControllers = Get.put(getController()); //get套件
 
 class _signUpPageState extends State<signUpPage> {
   void initState() {
@@ -18,10 +26,12 @@ class _signUpPageState extends State<signUpPage> {
     getController.sEmailAdress = '';
   }
 
+  //會用到的textfield的Controller跟Focus
   final studentID_Controller = TextEditingController();
   final emailAddress_Controller = TextEditingController();
   final password_Controller = TextEditingController();
   final studentID_Focus = FocusNode();
+  //textfield dispose
   @override
   void dispose() {
     studentID_Controller.dispose();
@@ -32,109 +42,100 @@ class _signUpPageState extends State<signUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    void forgotPwDataCheck() {
-      String studentID, password, emailAddress;
+    void signUpDataCheck() {
+      String studentID, password, emailAddress; //創建判斷字串
 
+      //將使用者輸入存入判斷字串
       studentID = studentID_Controller.text;
       password = password_Controller.text;
       emailAddress = emailAddress_Controller.text;
 
-      if (studentID.isEmpty == true) {
-        // Fluttertoast.showToast(
-        //   msg: '請輸入驗證碼',
-        //   gravity: ToastGravity.CENTER,
-        //   toastLength: Toast.LENGTH_SHORT,
-        //   timeInSecForIosWeb: 3,
-        //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
-        // );
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('請輸入完整資料'),
-                  content: Icon(
-                    Icons.warning_amber_rounded,
-                    color: Colors.yellow,
-                    size: 100,
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text('確認')),
-                  ],
-                ));
+      if (studentID.isEmpty == true ||
+          password.isEmpty == true ||
+          emailAddress_Controller.text.isEmpty == true) {
+        showCupertinoModalPopup<void>(
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) => CupertinoAlertDialog(
+            title: Text('學號、密碼或信箱不可為空'),
+            content: Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Icon(
+                Icons.do_not_disturb_alt_outlined,
+                color: Colors.red,
+                size: 80,
+              ),
+            ),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('確認'),
+              ),
+            ],
+          ),
+        );
       } else {
-        if (password.isEmpty == true) {
-          // Fluttertoast.showToast(
-          //   msg: '未選取照片',
-          //   gravity: ToastGravity.CENTER,
-          //   toastLength: Toast.LENGTH_SHORT,
-          //   timeInSecForIosWeb: 3,
-          //   backgroundColor: Color.fromARGB(255, 65, 65, 66),
-          // );
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                    title: Text('請輸入完整資料'),
-                    content: Icon(
-                      Icons.warning_amber_rounded,
-                      color: Colors.yellow,
-                      size: 100,
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('確認')),
-                    ],
-                  ));
+        if (EmailValidator.validate(emailAddress_Controller.text) != true) {
+          showCupertinoModalPopup<void>(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) => CupertinoAlertDialog(
+              title: Text('請輸入正確的信箱格式'),
+              content: Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Icon(
+                  Icons.do_not_disturb_alt_outlined,
+                  color: Colors.red,
+                  size: 80,
+                ),
+              ),
+              actions: <CupertinoDialogAction>[
+                CupertinoDialogAction(
+                  isDefaultAction: true,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            ),
+          );
         } else {
-          if (emailAddress.isEmpty == true) {
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                      title: Text('請輸入完整資料'),
-                      content: Icon(
-                        Icons.warning_amber_rounded,
-                        color: Colors.yellow,
-                        size: 100,
-                      ),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('確認')),
-                      ],
-                    ));
-          } else {
-            getController.sStudentID = studentID;
-            getController.sPassword = password;
-            getController.sEmailAdress = emailAddress;
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                      title: Text('驗證碼已傳送至信箱'),
-                      content: Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.green,
-                        size: 100,
-                      ),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => signUpFinalPage()),
-                              );
-                            },
-                            child: Text('確認')),
-                      ],
-                    ));
-          }
+          getController.sStudentID = studentID;
+          getController.sPassword = password;
+          getController.sEmailAdress = emailAddress;
+          showCupertinoModalPopup<void>(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) => CupertinoAlertDialog(
+              title: Text('驗證碼已傳送至信箱'),
+              content: Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.green,
+                  size: 80,
+                ),
+              ),
+              actions: <CupertinoDialogAction>[
+                CupertinoDialogAction(
+                  isDefaultAction: true,
+                  onPressed: () {
+                    getControllers.signUpVerificationCodeGenerator();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => signUpFinalPage()),
+                    );
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            ),
+          );
         }
       }
     }
@@ -187,8 +188,12 @@ class _signUpPageState extends State<signUpPage> {
                         //     ),
                         child: TextField(
                           decoration: InputDecoration(
-                              labelText: '學號', hintText: '請輸入學號'),
+                              labelText: '學號', hintText: '請輸入學號(8碼)'),
                           keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(8),
+                          ],
                           focusNode: studentID_Focus,
                           controller: studentID_Controller,
                         ),
@@ -207,7 +212,12 @@ class _signUpPageState extends State<signUpPage> {
                         //     ),
                         child: TextField(
                           decoration: InputDecoration(
-                              labelText: '密碼', hintText: '請輸入密碼'),
+                              labelText: '密碼', hintText: '請輸入密碼(最多為12碼)'),
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(12),
+                            FilteringTextInputFormatter.allow(
+                                RegExp('[a-z A-Z 0-9]'))
+                          ],
                           obscureText: true,
                           controller: password_Controller,
                         ),
@@ -220,14 +230,14 @@ class _signUpPageState extends State<signUpPage> {
                       child: Container(
                         height: 70,
                         width: MediaQuery.of(context).size.width,
-
-                        // decoration: BoxDecoration(
-                        //     borderRadius: BorderRadius.all(Radius.circular(12)),
-                        //     ),
                         child: TextField(
                           decoration: InputDecoration(
-                              labelText: '信箱', hintText: '請輸入註冊信箱'),
+                              labelText: '信箱', hintText: '請輸入註冊信箱(格式需正確)'),
                           keyboardType: TextInputType.emailAddress,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp('[a-z A-Z 0-9 @ .]'))
+                          ],
                           controller: emailAddress_Controller,
                         ),
                       ),
@@ -244,7 +254,7 @@ class _signUpPageState extends State<signUpPage> {
                             color: Color.fromARGB(255, 54, 160, 247)),
                         child: TextButton(
                           onPressed: () {
-                            forgotPwDataCheck();
+                            signUpDataCheck();
                           },
                           child: Text(
                             '下一步',
